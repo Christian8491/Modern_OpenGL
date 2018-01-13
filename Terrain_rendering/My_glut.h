@@ -9,7 +9,7 @@ int my_glut_init(int argc, char **argv, const int width = WIDTH, const int heigh
 	glutInitWindowPosition(50, 50);
 	glutInitWindowSize(width, height);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-	glutCreateWindow("First Tutorial");
+	glutCreateWindow("Terrain Rendering by Christian Cordova");
 
 	/* Check if glew work */
 	glewExperimental = GL_TRUE;
