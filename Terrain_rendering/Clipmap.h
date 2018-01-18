@@ -116,6 +116,28 @@ struct Clipmap {
 		}
 	}
 
+	/* Some 'y' coordinates will be updated to delete the holes to L = {2,3,4,..} */
+	void deleteHole() 
+	{
+		/* top & bottom */
+		int uppOff = 4;
+		int leftOff = 3 * 33 + 1;
+		int right = 3 * 33 * 2 - 2;
+		int bottomOff = 33 * 3 * 32 + 4;
+		int sideOff = 99 * 2;
+
+		for (int i = 0; i < 16; i++) {
+			coordinates[uppOff] = (coordinates[uppOff - 3] + coordinates[uppOff + 3]) / 2;
+			coordinates[leftOff] = (coordinates[leftOff - 99] + coordinates[leftOff + 99]) / 2;
+			coordinates[right] = (coordinates[right - 99] + coordinates[right + 99]) / 2;
+			coordinates[bottomOff] = (coordinates[bottomOff - 3] + coordinates[bottomOff + 3]) / 2;
+			uppOff += 6;
+			bottomOff += 6;
+			leftOff += sideOff;
+			right += sideOff;
+		}
+	}
+
 	/* Generate the triangulation coordinates to the center L = 1 */
 	void generateCenterTriangulation() {
 
@@ -165,6 +187,8 @@ struct Clipmap {
 	void generateSidesTriangulation() {
 
 		/* Top */
+		deleteHole();
+
 		int cont = 0;
 		int totalOffset = 0, totalCoordOff = 0;
 		int offset = N_COORD * N_COORD;									// 3 * 3

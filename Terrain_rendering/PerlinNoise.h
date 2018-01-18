@@ -100,7 +100,7 @@ struct PerlinNoise {
 		float yb = xc + wy*(xd - xc);
 		float value = ya + wz*(yb - ya);
 
-		return value / 1.5; // 3.0;
+		return value;// / 1.2;
 	}
 
 	double fade(double t);

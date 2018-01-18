@@ -17,5 +17,6 @@ vec3 someBlue3   = vec3(0.06, 0.18, 0.91);
 vec3 someYellow3 = vec3(1.0, 0.765, 0.0);
 vec3 somePurple3 = vec3(0.415, 0.208, 0.863);
 vec3 black3      = vec3(0.0, 0.0, 0.0); 
+vec3 skyBlue3 = vec3(0.616, 0.824, 0.941);
 
 #endif 

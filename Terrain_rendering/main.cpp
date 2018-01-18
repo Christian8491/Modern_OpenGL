@@ -15,14 +15,14 @@
 using namespace std;
 
 /* Buffers and program */
-GLuint bufferMap1, bufferMap2, bufferMap3, bufferMap4, bufferMap5, bufferMap6;
+GLuint bufferMap1, bufferMap2, bufferMap3, bufferMap4, bufferMap5, bufferMap6, bufferMap7, bufferMap8;
 GLuint clipmapProgram;
 
 /* Shaders */
 Shader* clipmapShader;
 
 /* Clipmap */
-Clipmap clipmap1, clipmap2, clipmap3, clipmap4, clipmap5;
+Clipmap clipmap1, clipmap2, clipmap3, clipmap4, clipmap5, clipmap6, clipmap7, clipmap8;
 
 /* Texture */
 GLuint texture;
@@ -42,7 +42,7 @@ void init() {
 
 	/* Clear window */
 	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.529f, 0.807f, 0.92f, 0.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);			// 0.529f, 0.807f, 0.92f, 0.0f
 
 	/* Init Shaders */
 	clipmapShader = new Shader("shaders/clipmap_vshader.glsl", "shaders/clipmap_fshader.glsl");
@@ -80,19 +80,35 @@ void init() {
 	clipmap5.perlinCoordinates();
 	clipmap5.generateSidesTriangulation();
 
+	clipmap6.initialize(6);
+	clipmap6.readCoordinates();
+	clipmap6.generateHeigths();
+	clipmap6.perlinCoordinates();
+	clipmap6.generateSidesTriangulation();
+
+	clipmap7.initialize(7);
+	clipmap7.readCoordinates();
+	clipmap7.generateHeigths();
+	clipmap7.perlinCoordinates();
+	clipmap7.generateSidesTriangulation();
+
+	clipmap8.initialize(8);
+	clipmap8.readCoordinates();
+	clipmap8.generateHeigths();
+	clipmap8.perlinCoordinates();
+	clipmap8.generateSidesTriangulation();
+
 	/* Buffers */
 	glGenBuffers(1, &bufferMap1);
 	glBindBuffer(GL_ARRAY_BUFFER, bufferMap1);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(background_1), background_1, GL_STATIC_DRAW);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(background_1)+sizeof(texCoords), NULL, GL_STATIC_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(background_1), background_1);
-	glBufferSubData(GL_ARRAY_BUFFER, sizeof(background_1), sizeof(texCoords), texCoords);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(background_1)+sizeof(texCoords), NULL, GL_STATIC_DRAW);
+	//glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(background_1), background_1);
+	//glBufferSubData(GL_ARRAY_BUFFER, sizeof(background_1), sizeof(texCoords), texCoords);
 
 
-	//glGenBuffers(1, &bufferMap1);
-	//glBindBuffer(GL_ARRAY_BUFFER, bufferMap1);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(clipmap1.triangulationCoord) * a, clipmap1.triangulationCoord, GL_STATIC_DRAW);
+	glGenBuffers(1, &bufferMap1);
+	glBindBuffer(GL_ARRAY_BUFFER, bufferMap1);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(clipmap1.triangulationCoord) * a, clipmap1.triangulationCoord, GL_STATIC_DRAW);
 
 	glGenBuffers(1, &bufferMap2);
 	glBindBuffer(GL_ARRAY_BUFFER, bufferMap2);
@@ -109,6 +125,18 @@ void init() {
 	glGenBuffers(1, &bufferMap5);
 	glBindBuffer(GL_ARRAY_BUFFER, bufferMap5);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(clipmap5.triangulationCoord) * a, clipmap5.triangulationCoord, GL_STATIC_DRAW);
+
+	glGenBuffers(1, &bufferMap6);
+	glBindBuffer(GL_ARRAY_BUFFER, bufferMap6);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(clipmap6.triangulationCoord) * a, clipmap6.triangulationCoord, GL_STATIC_DRAW);
+
+	glGenBuffers(1, &bufferMap7);
+	glBindBuffer(GL_ARRAY_BUFFER, bufferMap7);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(clipmap7.triangulationCoord) * a, clipmap7.triangulationCoord, GL_STATIC_DRAW);
+
+	glGenBuffers(1, &bufferMap8);
+	glBindBuffer(GL_ARRAY_BUFFER, bufferMap8);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(clipmap8.triangulationCoord) * a, clipmap8.triangulationCoord, GL_STATIC_DRAW);
 
 	/* Load an image and apply Textures */
 	bitmap_image image_vec("textures/wall.bmp");
@@ -140,7 +168,6 @@ void drawBackgrounds(Shader* &shader, GLuint& buffer, GLuint& program, int& num_
 	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
 
 	GLuint vTexCoord = glGetAttribLocation(program, "vTexCoord");
-	cout << vTexCoord << endl;
 	if (buffer == bufferMap1) {
 		glEnableVertexAttribArray(vTexCoord);
 		glVertexAttribPointer(vTexCoord, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(sizeof(background_1)));
@@ -174,19 +201,21 @@ void display() {
 	//drawBackgrounds(clipmapShader, bufferMap1, clipmapProgram, numVertices_1, grayColor3);
 	//drawBackgrounds(clipmapShader, bufferMap2, clipmapProgram, numVertices_2, someRed3);
 
-	drawBackgrounds(clipmapShader, bufferMap1, clipmapProgram, numVertices_1 /*a*/, grayColor3);
+	drawBackgrounds(clipmapShader, bufferMap1, clipmapProgram, a/*numVertices_1 /*a*/, grayColor3);
 	drawBackgrounds(clipmapShader, bufferMap2, clipmapProgram, a, someRed3);
 	drawBackgrounds(clipmapShader, bufferMap3, clipmapProgram, a, someGreen3);
 	drawBackgrounds(clipmapShader, bufferMap4, clipmapProgram, a, someBlue3);
 	drawBackgrounds(clipmapShader, bufferMap5, clipmapProgram, a, someYellow3);
-	//drawBackgrounds(clipmapShader, bufferMap6, clipmapProgram, numVertices_2, somePurple3);
+	drawBackgrounds(clipmapShader, bufferMap6, clipmapProgram, a, somePurple3); 
+	drawBackgrounds(clipmapShader, bufferMap7, clipmapProgram, a, skyBlue3);
 
-	//drawBackgrounds(clipmapShader, bufferMap1, clipmapProgram, a, grayDarkColor3, true);
+	drawBackgrounds(clipmapShader, bufferMap1, clipmapProgram, a, grayDarkColor3, true);
 	drawBackgrounds(clipmapShader, bufferMap2, clipmapProgram, a, grayDarkColor3, true);
 	drawBackgrounds(clipmapShader, bufferMap3, clipmapProgram, a, grayDarkColor3, true);
 	drawBackgrounds(clipmapShader, bufferMap4, clipmapProgram, a, grayDarkColor3, true);
 	drawBackgrounds(clipmapShader, bufferMap5, clipmapProgram, a, grayDarkColor3, true);
-
+	drawBackgrounds(clipmapShader, bufferMap6, clipmapProgram, a, grayDarkColor3, true);
+	drawBackgrounds(clipmapShader, bufferMap7, clipmapProgram, a, grayDarkColor3, true);
 	glutSwapBuffers();
 }
 
@@ -215,28 +244,28 @@ void keyboard(unsigned char key, int x, int y) {
 
 int main(int argc, char **argv) {
 	/* function to generate coordinates to triangulate
-	ofstream outputFile("clipmap_data/triangulization_6.txt", ofstream::out);
+	ofstream outputFile("clipmap_data/triangulization_8.txt", ofstream::out);
 
-	double x = -51.2;
-	double constant = 51.2;
-	double y = 51.2;
-	double offset = 3.2;
+	double x = -204.8;
+	double constant = 204.8;
+	double y = 204.8;
+	double offset = 12.8;
 	int cont = 0;
+
 	for (int i = 0; i < 33; i++) {
-	for (int j = 0; j < 33; j++) {
-	outputFile << x;
-	outputFile << " 0.0 ";
-	outputFile << y;
-	outputFile << "\n";
-	x += offset;
-	}
-	x = -51.2;
-	constant -= offset;
-	y = constant;
+		for (int j = 0; j < 33; j++) {
+			outputFile << x;
+			outputFile << " 0.0 ";
+			outputFile << y;
+			outputFile << "\n";
+			x += offset;
+		}
+		x = -204.8;
+		constant -= offset;
+		y = constant;
 	}
 	outputFile.close();
 	*/
-
 	/* Init glut and check if glew works */
 	my_glut_init(argc, argv, WIDTH, HEIGHT);
 
@@ -247,6 +276,6 @@ int main(int argc, char **argv) {
 	glutKeyboardFunc(keyboard);
 	//glutMouseFunc(mouse);
 	glutMainLoop();
-
+	
 	return 0;
 }
