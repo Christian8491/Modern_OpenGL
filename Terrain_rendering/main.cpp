@@ -9,17 +9,17 @@
 #include "Texture.h"
 #include "bitmap_image.h"
 
-//#define STB_IMAGE_IMPLEMENTATION
-//#include "stb_image.h"
-
-using namespace std;
-
 /* Buffers and program */
+<<<<<<< HEAD
 GLuint bufferMap1, bufferMap2, bufferMap3, bufferMap4, bufferMap5, bufferMap6, bufferMap7, bufferMap8;
 GLuint clipmapProgram;
+=======
+GLuint bufferMap1, bufferMap2, bufferMap3, bufferMap4, bufferMap5, bufferMap6;
+GLuint clipmapProgram, textureProgram;
+>>>>>>> ca4146160523c5b30b1149c72237a3d2c2bcda59
 
 /* Shaders */
-Shader* clipmapShader;
+Shader* clipmapShader, *textureShader;
 
 /* Clipmap */
 Clipmap clipmap1, clipmap2, clipmap3, clipmap4, clipmap5, clipmap6, clipmap7, clipmap8;
@@ -47,6 +47,9 @@ void init() {
 	/* Init Shaders */
 	clipmapShader = new Shader("shaders/clipmap_vshader.glsl", "shaders/clipmap_fshader.glsl");
 	clipmapProgram = clipmapShader->use_program();
+
+	textureShader = new Shader("shaders/texture_vshader.glsl", "shaders/texture_fshader.glsl");
+	textureProgram = textureShader->use_program();
 
 	camera.initialize();
 
@@ -101,6 +104,7 @@ void init() {
 	/* Buffers */
 	glGenBuffers(1, &bufferMap1);
 	glBindBuffer(GL_ARRAY_BUFFER, bufferMap1);
+<<<<<<< HEAD
 	//glBufferData(GL_ARRAY_BUFFER, sizeof(background_1)+sizeof(texCoords), NULL, GL_STATIC_DRAW);
 	//glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(background_1), background_1);
 	//glBufferSubData(GL_ARRAY_BUFFER, sizeof(background_1), sizeof(texCoords), texCoords);
@@ -109,6 +113,12 @@ void init() {
 	glGenBuffers(1, &bufferMap1);
 	glBindBuffer(GL_ARRAY_BUFFER, bufferMap1);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(clipmap1.triangulationCoord) * a, clipmap1.triangulationCoord, GL_STATIC_DRAW);
+=======
+	glBufferData(GL_ARRAY_BUFFER, sizeof(background_1) + sizeof(texCoords), NULL, GL_STATIC_DRAW); // COMENT
+	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(background_1), background_1); // COMMENT
+	glBufferSubData(GL_ARRAY_BUFFER, sizeof(background_1), sizeof(texCoords), texCoords); // COMMENT
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(clipmap1.triangulationCoord) * a, clipmap1.triangulationCoord, GL_STATIC_DRAW); // UNCOMENT
+>>>>>>> ca4146160523c5b30b1149c72237a3d2c2bcda59
 
 	glGenBuffers(1, &bufferMap2);
 	glBindBuffer(GL_ARRAY_BUFFER, bufferMap2);
@@ -139,7 +149,7 @@ void init() {
 	glBufferData(GL_ARRAY_BUFFER, sizeof(clipmap8.triangulationCoord) * a, clipmap8.triangulationCoord, GL_STATIC_DRAW);
 
 	/* Load an image and apply Textures */
-	bitmap_image image_vec("textures/wall.bmp");
+	bitmap_image image_vec("textures/container.bmp");
 	unsigned char* image_arr = image_vec.data_vector_to_array();
 
 	glGenTextures(1, &texture);
@@ -148,7 +158,6 @@ void init() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (int)image_vec.width_, (int)image_vec.height_, 0, GL_RGB, GL_UNSIGNED_BYTE, image_arr);
 	glGenerateMipmap(GL_TEXTURE_2D);
 }
@@ -167,12 +176,15 @@ void drawBackgrounds(Shader* &shader, GLuint& buffer, GLuint& program, int& num_
 	glEnableVertexAttribArray(vPosition);
 	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
 
+<<<<<<< HEAD
 	GLuint vTexCoord = glGetAttribLocation(program, "vTexCoord");
 	if (buffer == bufferMap1) {
 		glEnableVertexAttribArray(vTexCoord);
 		glVertexAttribPointer(vTexCoord, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(sizeof(background_1)));
 	}
 
+=======
+>>>>>>> ca4146160523c5b30b1149c72237a3d2c2bcda59
 	shader->use();
 
 	/* Vertex Shader */
@@ -190,26 +202,65 @@ void drawBackgrounds(Shader* &shader, GLuint& buffer, GLuint& program, int& num_
 	/*--- Draw and disable each vertex attribute array being enabled ---*/
 	glDrawArrays(GL_TRIANGLES, 0, num_vertices);
 	glDisableVertexAttribArray(vPosition);
+}
 
-	if (buffer == bufferMap1) glDisableVertexAttribArray(vTexCoord);
+void drawTexture(Shader* &shader, GLuint& buffer, GLuint& program, int& num_vertices) {
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+
+	/* Get and set: Vertex shader 'in' variables */
+	GLuint vPosition = glGetAttribLocation(program, "vPosition");
+	glEnableVertexAttribArray(vPosition);
+	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+
+	GLuint vTexCoord = glGetAttribLocation(program, "vTexCoord");
+	glEnableVertexAttribArray(vTexCoord);
+	glVertexAttribPointer(vTexCoord, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(sizeof(background_1)));
+
+	shader->use();
+
+	/* Vertex Shader */
+	mat4 view, projection, model;
+	view = LookAt(camera.position, camera.front, camera.up) * view;
+	projection = Perspective(fovy, (GLfloat)WIDTH / (GLfloat)HEIGHT, zNear, zFar);
+
+	shader->setMat4("projection", projection);
+	shader->setMat4("view", view);
+	shader->setMat4("model", model);
+
+	/*--- Draw and disable each vertex attribute array being enabled ---*/
+	glDrawArrays(GL_TRIANGLES, 0, num_vertices);
+	glDisableVertexAttribArray(vPosition);
+	glDisableVertexAttribArray(vTexCoord);
 
 }
 
 void display() {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//drawBackgrounds(clipmapShader, bufferMap1, clipmapProgram, numVertices_1, grayColor3);
-	//drawBackgrounds(clipmapShader, bufferMap2, clipmapProgram, numVertices_2, someRed3);
 
+<<<<<<< HEAD
 	drawBackgrounds(clipmapShader, bufferMap1, clipmapProgram, a/*numVertices_1 /*a*/, grayColor3);
+=======
+	/* Draw terrain */
+	drawTexture(textureShader, bufferMap1, textureProgram, numVer);  // to texture
+	//drawBackgrounds(clipmapShader, bufferMap1, clipmapProgram, a, grayColor3); // UNCOMENT
+>>>>>>> ca4146160523c5b30b1149c72237a3d2c2bcda59
 	drawBackgrounds(clipmapShader, bufferMap2, clipmapProgram, a, someRed3);
 	drawBackgrounds(clipmapShader, bufferMap3, clipmapProgram, a, someGreen3);
 	drawBackgrounds(clipmapShader, bufferMap4, clipmapProgram, a, someBlue3);
 	drawBackgrounds(clipmapShader, bufferMap5, clipmapProgram, a, someYellow3);
+<<<<<<< HEAD
 	drawBackgrounds(clipmapShader, bufferMap6, clipmapProgram, a, somePurple3); 
 	drawBackgrounds(clipmapShader, bufferMap7, clipmapProgram, a, skyBlue3);
 
 	drawBackgrounds(clipmapShader, bufferMap1, clipmapProgram, a, grayDarkColor3, true);
+=======
+
+	/* Draw triangulation */
+	//drawBackgrounds(clipmapShader, bufferMap1, clipmapProgram, a, grayDarkColor3, true); // UNCOMENT
+>>>>>>> ca4146160523c5b30b1149c72237a3d2c2bcda59
 	drawBackgrounds(clipmapShader, bufferMap2, clipmapProgram, a, grayDarkColor3, true);
 	drawBackgrounds(clipmapShader, bufferMap3, clipmapProgram, a, grayDarkColor3, true);
 	drawBackgrounds(clipmapShader, bufferMap4, clipmapProgram, a, grayDarkColor3, true);

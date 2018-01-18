@@ -1,5 +1,5 @@
 # Modern_OpenGL
 
 - First project: A simple practical code
-- Second project: Cube Rotate
+- Second project: A Sphere Rotate
 - Third project: Terrain rendering
